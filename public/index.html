@@ -1,43 +1,33 @@
-<html>
 
-<head>
-  <title>node.js http server</title>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
-</head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Phaser Template</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+    <script src="./index.js" type="module"></script>
 
-<body>
-
-  <script>
-
-    const config = {
-      type: Phaser.AUTO, // Which renderer to use
-      width: 1350, // Canvas width in pixels
-      height: 640, // Canvas height in pixels
-      parent: "game-container", // ID of the DOM element to add the canvas to
-      scene: {
-        preload: preload,
-        create: create,
-        update: update
+    <style>
+      html,
+      body,
+      #game-container {
+        margin: 0;
+        padding: 0;
       }
-    };
+      #game-container {
+        min-width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #game-container > canvas {
+        border-radius: 5px;
+      }
+    </style>
+  </head>
 
-    const game = new Phaser.Game(config);
-
-    function preload() {
-      // Runs once, loads up assets like images and audio
-      this.load.image('sky', './img/IMG_0002 (1).jpg');
-    }
-
-    function create() {
-      // Runs once, after all assets in preload are loaded
-      this.add.image(400, 300, 'sky');
-    }
-
-    function update(time, delta) {
-      // Runs once per frame for the duration of the scene
-    }
-
-  </script>
-</body>
+  <body>
+    <div id="game-container"></div>
+  </body>
 
 </html>
