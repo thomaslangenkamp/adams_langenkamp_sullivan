@@ -15,7 +15,7 @@ let controls;
 
 function preload() {
   this.load.image("tiles", "./pokemon-terrain.png");
-  this.load.tilemapCSV("map", "./grass-test.csv");
+  this.load.tilemapTiledJSON("map", "./grass-test.json");
 }
 
 function create() {
@@ -23,9 +23,9 @@ function create() {
 
   // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
   // Phaser's cache (i.e. the name you used in preload)
-  const map = this.make.tilemap({ key: "map", tileWidth: 16, tileHeight: 16 });
-  const tileset = map.addTilesetImage("tiles");
-  const layer = map.createStaticLayer(0, tileset, 0, 0); // layer index, tileset, x, y
+  const map = this.make.tilemap({ key: "map" });
+  const tileset = map.addTilesetImage("pokemon-terrain", "tiles");
+  const tileLayer1 = map.createStaticLayer("Tile Layer 1", tileset, 0, 0); // layer index, tileset, x, y
 
   // Phaser supports multiple cameras, but you can access the default camera like this:
   const camera = this.cameras.main;
