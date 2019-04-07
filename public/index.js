@@ -25,7 +25,8 @@ function create() {
   // Phaser's cache (i.e. the name you used in preload)
   const map = this.make.tilemap({ key: "map" });
   const tileset = map.addTilesetImage("pokemon-terrain", "tiles");
-  const tileLayer1 = map.createStaticLayer("Tile Layer 1", tileset, 0, 0); // layer index, tileset, x, y
+  const belowLayer = map.createStaticLayer("1", tileset, 0, 0); // layer index, tileset, x, y
+  const worldLayer = map.createStaticLayer("2", tileset, 0, 0); // layer index, tileset, x, y
 
   // Phaser supports multiple cameras, but you can access the default camera like this:
   const camera = this.cameras.main;
