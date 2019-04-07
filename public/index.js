@@ -23,11 +23,12 @@ let cursors;
 let player;
 let showDebug = false;
 let colliding;
+let inWheat = false;
 
 function preload() {
   this.load.image("tiles", "./pokemon-terrain.png");
   this.load.tilemapTiledJSON("map", "./grass-test.json");
-  this.load.spritesheet('link', './simple-link-extruded.png', { frameWidth: 16, frameHeight: 20 });
+  this.load.spritesheet('link', './simple-link.png', { frameWidth: 16, frameHeight: 20 });
 }
 
 function create() {
@@ -35,11 +36,13 @@ function create() {
   // Phaser's cache (i.e. the name you used in preload)
   const map = this.make.tilemap({ key: "map" });
   const tileset = map.addTilesetImage("pokemon-terrain", "tiles", 16, 16, 1, 2);
-  const belowLayer = map.createStaticLayer("Tile Layer 1", tileset, 0, 0); // layer index, tileset, x, y
-  const worldLayer = map.createStaticLayer("Tile Layer 2", tileset, 0, 0); // layer index, tileset, x, y
-  const aboveLayer = map.createStaticLayer("Tile Layer 3", tileset, 0, 0); // layer index, tileset, x, y
+  const underLayer = map.createStaticLayer("Tile Layer 1", tileset, 0, 0); // layer index, tileset, x, y
+  const belowLayer = map.createStaticLayer("Tile Layer 2", tileset, 0, 0); // layer index, tileset, x, y
+  const worldLayer = map.createStaticLayer("Tile Layer 3", tileset, 0, 0); // layer index, tileset, x, y
+  const aboveLayer = map.createStaticLayer("Tile Layer 4", tileset, 0, 0); // layer index, tileset, x, y
 
 
+  belowLayer.setCollisionByProperty({ collides: true });
   worldLayer.setCollisionByProperty({ collides: true });
 
   // By default, everything gets depth sorted on the screen in the order we created things. Here, we
@@ -54,10 +57,17 @@ function create() {
     .setOffset(0, 4);
 
   // // This will watch the player and worldLayer every frame to check for collisions
-  this.physics.add.collider(player, worldLayer, linkPush, null, this);
+  this.physics.add.collider(player, belowLayer, linkPush, null, this);
+  this.physics.add.collider(player, worldLayer, linkPush, null, this); 
+  belowLayer.setTileIndexCallback(560, shuffleWheat, this);
   // // Create the player's walking animations from the texture atlas. These are stored in the global
   // // animation manager so any sprite can access them.
-  function linkPush(player) {
+  function shuffleWheat() {
+    player.tint = Math.random() * 0xffffff;
+    inWheat = true;
+  }
+
+  function linkPush() {
     colliding = true;
   }
 
@@ -135,6 +145,16 @@ function create() {
     frameRate: rateFrames,
     repeat: -1
   });
+  anims.create({
+    key: "link-back-flip",
+    frames: anims.generateFrameNames("link", {
+      start: 8,
+      end: 11
+    }),
+    frameRate: rateFrames,
+    repeat: -1
+  });
+
   const camera = this.cameras.main;
   camera.startFollow(player);
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -162,6 +182,11 @@ function create() {
       .graphics()
       .setAlpha(0.75)
       .setDepth(20);
+    belowLayer.renderDebug(graphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+    });
     worldLayer.renderDebug(graphics, {
       tileColor: null, // Color of non-colliding tiles
       collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
@@ -170,8 +195,8 @@ function create() {
   });
 }
 
+var speed = 150;
 function update(time, delta) {
-  const speed = 175;
   const prevVelocity = player.body.velocity.clone();
 
   // Stop any previous movement from the last frame
@@ -195,8 +220,14 @@ function update(time, delta) {
   player.body.velocity.normalize().scale(speed);
 
   // Update the animation last and give left/right animations precedence over up/down animations
+  if (!cursors.space.isDown) {
+        speed = 150;
+  }
   if (!colliding)
-    if (cursors.left.isDown) {
+    if (cursors.space.isDown) {
+      player.anims.play("link-back-flip", true);
+      speed = 300;
+    } else if (cursors.left.isDown) {
       player.anims.play("link-left-walk", true);
     } else if (cursors.right.isDown) {
       player.anims.play("link-right-walk", true);
@@ -207,10 +238,21 @@ function update(time, delta) {
     } else {
       player.anims.stop();
       // If we were moving, pick and idle frame to use
-      if (prevVelocity.x < 0) player.setTexture("link", 5);       // left
-      else if (prevVelocity.x > 0) player.setTexture("link", 2);  // right
-      else if (prevVelocity.y < 0) player.setTexture("link", 0);  // back
-      else if (prevVelocity.y > 0) player.setTexture("link", 6);  // front
+      if(inWheat) {
+        if (prevVelocity.x < 0) player.setTexture("link", 14);       // left
+        else if (prevVelocity.x > 0) player.setTexture("link", 15);  // right
+        else if (prevVelocity.y < 0) player.setTexture("link", 13);  // back
+        else if (prevVelocity.y > 0) player.setTexture("link", 12);  // front
+        if (prevVelocity.x < 0) player.setTexture("link", 5);       // left
+        else if (prevVelocity.x > 0) player.setTexture("link", 2);  // right
+        else if (prevVelocity.y < 0) player.setTexture("link", 0);  // back
+        else if (prevVelocity.y > 0) player.setTexture("link", 6);  // front
+      } else {
+        if (prevVelocity.x < 0) player.setTexture("link", 5);       // left
+        else if (prevVelocity.x > 0) player.setTexture("link", 2);  // right
+        else if (prevVelocity.y < 0) player.setTexture("link", 0);  // back
+        else if (prevVelocity.y > 0) player.setTexture("link", 6);  // front
+      }
     } else {
     if (cursors.left.isDown) {
       player.anims.play("link-left-push", true);
@@ -225,4 +267,5 @@ function update(time, delta) {
     }
   }
   colliding = false;
+  inWheat = false;
 }
