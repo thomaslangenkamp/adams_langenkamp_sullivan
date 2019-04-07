@@ -25,8 +25,18 @@ function create() {
   // Phaser's cache (i.e. the name you used in preload)
   const map = this.make.tilemap({ key: "map" });
   const tileset = map.addTilesetImage("pokemon-terrain", "tiles");
-  const belowLayer = map.createStaticLayer("1", tileset, 0, 0); // layer index, tileset, x, y
-  const worldLayer = map.createStaticLayer("2", tileset, 0, 0); // layer index, tileset, x, y
+  const belowLayer = map.createStaticLayer("Tile Layer 1", tileset, 0, 0); // layer index, tileset, x, y
+  const worldLayer = map.createStaticLayer("Tile Layer 2", tileset, 0, 0); // layer index, tileset, x, y
+  const aboveLayer = map.createStaticLayer("Tile Layer 3", tileset, 0, 0); // layer index, tileset, x, y
+
+
+  worldLayer.setCollisionByProperty({ collides: true });
+  const debugGraphics = this.add.graphics().setAlpha(0.75);
+  worldLayer.renderDebug(debugGraphics, {
+    tileColor: null, // Color of non-colliding tiles
+    collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+    faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+  });
 
   // Phaser supports multiple cameras, but you can access the default camera like this:
   const camera = this.cameras.main;
