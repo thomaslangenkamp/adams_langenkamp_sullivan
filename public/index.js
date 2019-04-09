@@ -59,7 +59,7 @@ function create() {
   // // This will watch the player and worldLayer every frame to check for collisions
   this.physics.add.collider(player, belowLayer, linkPush, null, this);
   this.physics.add.collider(player, worldLayer, linkPush, null, this); 
-  belowLayer.setTileIndexCallback(560, shuffleWheat, this);
+  belowLayer.setTileIndexCallback(561, shuffleWheat, this);
   // // Create the player's walking animations from the texture atlas. These are stored in the global
   // // animation manager so any sprite can access them.
   function shuffleWheat() {
